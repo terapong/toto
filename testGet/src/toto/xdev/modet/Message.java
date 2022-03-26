@@ -1,9 +1,13 @@
 package toto.xdev.modet;
 
+import java.util.Date;
+
 public class Message {
 	private String name;
 	private Long temperature;
 	private Long humidity;
+	private Date updateDate;
+	
 	public String getName() {
 		return name;
 	}
@@ -21,5 +25,11 @@ public class Message {
 	}
 	public void setHumidity(Long humidity) {
 		this.humidity = humidity;
+	}
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 }

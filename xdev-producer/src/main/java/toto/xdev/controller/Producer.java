@@ -20,9 +20,9 @@ public class Producer {
 	//@PostMapping("/post")
 	@GetMapping("/post")
 	public String send(@RequestParam("name") String name, @RequestParam("temperature") String temperature, @RequestParam("humidity") String humidity) {
-		System.out.println("Name : " + name);
-		System.out.println("Temperature : " + temperature);
-		System.out.println("Humidity : " + humidity);
+//		System.out.println("Name : " + name);
+//		System.out.println("Temperature : " + temperature);
+//		System.out.println("Humidity : " + humidity);
 		
 		Message message = new Message();
 		message.setName(name);

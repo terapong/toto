@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import net.javaguides.springboot.model.LastMessage;
 import net.javaguides.springboot.model.Role;
 import net.javaguides.springboot.model.User;
+import net.javaguides.springboot.service.LastMessageService;
 import net.javaguides.springboot.service.RoleService;
 //import net.javaguides.springboot.service.UserService;
 import net.javaguides.springboot.service.UserServiceImpl;
@@ -24,10 +26,21 @@ public class MainController {
 	
 	@Autowired
 	private RoleService roleService;
+	
+	@Autowired
+	private LastMessageService lastMessageService;
+	
 //	@Autowired
 //	private UserService userService;
 	@Autowired
 	private UserServiceImpl userServiceImp;
+	
+//	@GetMapping("/lass_message")
+//	public String lass_message(Model m) {
+//		LastMessage emp = lastMessageService.getAllLastMessage().get(0);
+//		m.addAttribute("emp", emp);
+//		return "project_4";
+//	}
 	
 	@GetMapping("/project_1")
 	public String project_1(Model m) {
@@ -41,6 +54,27 @@ public class MainController {
 		List<User> emp = userServiceImp.getAlUsers();
 		m.addAttribute("emp", emp);
 		return "project_2";
+	}
+	
+	@GetMapping("/project_3")
+	public String project_3(Model m) {
+		List<User> emp = userServiceImp.getAlUsers();
+		m.addAttribute("emp", emp);
+		return "project_3";
+	}
+	
+	@GetMapping("/project_4")
+	public String project_4(Model m) {
+		LastMessage emp = lastMessageService.getAllLastMessage().get(0);
+		m.addAttribute("emp", emp);
+		return "project_4";
+	}
+	
+	@GetMapping("/project_5")
+	public String project_5(Model m) {
+		List<User> emp = userServiceImp.getAlUsers();
+		m.addAttribute("emp", emp);
+		return "project_5";
 	}
 	
 	@GetMapping("/login")

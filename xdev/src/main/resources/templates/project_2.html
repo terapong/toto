@@ -15,6 +15,132 @@
 	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
 	crossorigin="anonymous"></script>
 
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.cjs.js"
+	integrity="sha512-2e2aXOh4/FgkCAUyurkjk0Uw4m1gPcExFwb1Ai4Ajjg97se/FEWfrLG1na4mq8cgOzouc8qLIqsh0EGksPGdqQ=="
+	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script type="text/javascript"
+	src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+	margin: 0;
+	padding: 0;
+	font-family: sans-serif;
+}
+
+.chartMenu {
+	width: 100vw;
+	height: 40px;
+	background: #1A1A1A;
+	color: rgba(255, 26, 104, 1);
+}
+
+.chartMenu p {
+	padding: 10px;
+	font-size: 20px;
+}
+
+.chartCard {
+	width: 100vw;
+	height: calc(100vh - 40px);
+	background: rgba(255, 26, 104, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.chartBox {
+	width: 400px;
+	padding: 20px;
+	border-radius: 20px;
+	border: solid 3px rgba(255, 26, 104, 1);
+	background: white;
+}
+</style>
+
+<script>
+    // setup 
+    const data = {
+      labels: ['Mon', 'Tue', 'Wed'],
+      datasets: [{
+        label: 'Weekly Sales',
+        data: [18, 12, 6],
+        backgroundColor: [
+          'rgba(255, 26, 104, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)'
+        ],
+        needleValue: 25,
+        borderColor: 'white',
+        borderWidth: 2,
+        cutout: '95%',
+        circumference: 180,
+        rotation: 270,
+        borderRadius: 5,
+      }]
+    };
+    
+		// gaugeNeedle block
+    const gaugeNeedle = {
+			id: 'gaugeNeedle',
+			afterDatasetDraw(chart, args, options) {
+				const { ctx, config, data, chartArea: { top, bottom, left, right, width, height }} = chart;
+				ctx.save();
+				//console.log(data);
+				const needleValue = data.datasets[0].needleValue;
+				const dataTotal = data.datasets[0].data.reduce((a, b) => a + b, 0); 
+				const angle = Math.PI + (1 / dataTotal * needleValue * Math.PI);
+				const cx = width / 2;
+				const cy = chart._metasets[0].data[0].y;
+				//console.log(ctx.canvas.offsetTop);
+				// needle
+				ctx.translate(cx, cy);
+				ctx.rotate(angle);
+				ctx.beginPath();
+				ctx.moveTo(0, -2);
+				ctx.lineTo(height - (ctx.canvas.offsetTop + 30), 0);
+				ctx.lineTo(0, 2);
+				ctx.fillStye = '#444';
+				ctx.fill();
+				ctx.restore();
+				// needle dot
+				//ctx.translate(-cx, -cy);
+				ctx.beginPath();
+				ctx.arc(cx, cy, 5, 0, 10);
+				ctx.fill();
+				ctx.restore();
+				
+				ctx.font = '50px Helvetica';
+				ctx.fillStye = '#444';
+				ctx.fillText(needleValue + '%', cx, cy + 50);
+				ctx.textAlign = 'center';
+				ctx.restore();
+			}
+		};
+    // config 
+    const config = {
+      type: 'doughnut',
+      data,
+      options: {
+    	  plugins: {
+    		  legend: {
+    			  //display: false
+    		  },
+    		  //tooltip: {
+    			  
+    			  //callbacks: {
+    				  
+    			  //}
+    		  //}
+    	  },
+      },
+      plugins: [gaugeNeedle]
+    };
+
+    </script>
+
 </head>
 <body>
 	<!-- create navigation bar ( header) -->
@@ -24,88 +150,39 @@
 	<!-- Header potisuwan -->
 
 	<!-- Body potisuwan -->
+
 	<h1>ds</h1>
-	<div th:if=${session.msg}>
-		<div class="alert alert-success" role="alert" th:text="${session.msg}">
-		</div>
-		<th:block th:text="${#session.removeAttribute('msg')}"></th:block>
-	</div>
 
-	<div class="container p-5">
-		<table class="table table-striped">
-			<tr>
-				<td><a class="btn btn-primary" data-bs-target="#user_add"
-					data-bs-toggle="modal">Add</a></td>
-			</tr>
-			<tr>
-				<td>
-					<table class="table table-striped">
-						<thead class="bg-primary text-white">
-							<tr>
-								<th scope="col">Id</th>
-								<th scope="col">First Name</th>
-								<th scope="col">Last Name</th>
-								<th scope="col">Email</th>
-								<th scope="col">Action</th>
-							</tr>
-						</thead>
-
-						<tbody>
-							<tr th:each="e: ${emp}">
-								<th th:text="${e.id}"></th>
-								<td th:text="${e.firstname}"></td>
-								<td th:text="${e.lastname}"></td>
-								<td th:text="${e.email}"></td>
-								<td><a class="btn btn-sm btn-primary"
-									th:href="@{/user_edit/{id}(id=${e.id})}">Edit</a> <a
-									class="btn btn-sm btn-danger"
-									th:href="@{/user_delete/{id}(id=${e.id})}">Delete</a></td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</div>
-
-	<div class="modal fade" id="user_add">
-		<div class="modal-dialog">
-
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Add role</h5>
-					<button class="btn-close" data-bs-dismiss="modal"></button>
-				</div>
-
-				<div class="modal-body">
-					<form th:action="@{/user_add}" method="post" id="addusersave">
-						<div class="form-group">
-							<label>First Name</label> <input type="text" class="form-control"
-								name="firstname">
-						</div>
-						<div class="form-group">
-							<label>Last Name</label> <input type="text" class="form-control"
-								name="lastname">
-						</div>
-						<div class="form-group">
-							<label>Email</label> <input type="text" class="form-control"
-								name="email">
-						</div>
-						<div class="form-group">
-							<label>Password</label> <input type="text" class="form-control"
-								name="password">
-						</div>
-					</form>
-				</div>
-
-				<div class="modal-footer">
-					<button class="btn btn-success btn-block" form="addusersave">Save</button>
-					<a class="btn btn-secondary" data-bs-dismiss="modal">Cancer</a>
-				</div>
+	<div class="h2 text-center bg-info">Terapong potisuwan</div>
+	<div class="row">
+		<div class="col-12 bg-primary">Div One</div>
+		<div class="col bg-secondary">
+			<div class="chartBox">
+				<canvas id="myChart"></canvas>
 			</div>
-
 		</div>
+		<div class="col bg-info">
+			<div class="chartBox">
+				<canvas id="myChart1"></canvas>
+			</div>
+		</div>
+		<div class="col-12 bg-primary">Div Foot</div>
 	</div>
+
+	<script>
+	// render init block
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+	
+    const myChart1 = new Chart(
+    	      document.getElementById('myChart1'),
+    	      config
+    	    );
+	
+	
+	</script>
 
 	<!-- Body potisuwan -->
 

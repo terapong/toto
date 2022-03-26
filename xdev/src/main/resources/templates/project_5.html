@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+<title>Xdev</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	crossorigin="anonymous">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+	integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+	crossorigin="anonymous"></script>
+
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.cjs.js"
+	integrity="sha512-2e2aXOh4/FgkCAUyurkjk0Uw4m1gPcExFwb1Ai4Ajjg97se/FEWfrLG1na4mq8cgOzouc8qLIqsh0EGksPGdqQ=="
+	crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+.buttonBox {
+	width: 700px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+button {
+	padding: 5px 10px;
+	margin: 5px;
+	background: grey;
+	color: white;
+	border-radius: 20px;
+}
+.chartBoxMeter {
+	width: 250px;
+	height: 250px;
+}
+
+.chartBoxLine {
+	width: 100%;
+	height: 170px;
+}
+</style>
+
+</head>
+<body>
+	<!-- create navigation bar ( header) -->
+	<!-- Header potisuwan -->
+	<div th:replace="~{fragments/header :: header}"></div>
+
+	<!-- Header potisuwan -->
+
+	<!-- Body potisuwan -->
+
+	<hr><hr><hr>
+
+	<div class="row">
+		<div class="col buttonBox">
+			<div class="col-1 chartBoxMeter">
+			<canvas id="myChartMeter1"></canvas>
+		</div>
+		<div class="col-1 chartBoxMeter">
+			<canvas id="myChartMeter2"></canvas>
+		</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col chartBoxLine">
+			<canvas id="myChartLine"></canvas>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col buttonBox">
+			<button onclick = "toggleData(0)">Red</button>
+			<button onclick = "toggleData(1)">Blue</button>
+			<button onclick = "toggleData(2)">Yellow</button>
+		</div>
+	</div>
+
+	<script type="text/javascript"
+		src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+	
+    // setup 
+    const dataLine = {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Weekly Sales',
+        data: [9, 7, 6, 9, 12, 3, 9],
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+      },
+      {
+          label: 'Weekly Profits',
+          data: [9, 6, 3, 4.5, 6, 1.5, 4.5],
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+        }]
+    };
+    
+    const dataMeter1 = {
+    	      labels: ['Mon', 'Tue', 'Wed'],
+    	      datasets: [{
+    	        data: [18, 12, 150],
+    	        backgroundColor: [
+    	          'rgba(255, 26, 104, 1)',
+    	          'rgba(255, 206, 86, 1)',
+    	          'rgba(75, 192, 192, 1)'
+    	        ],
+    	        //แก้ตัวนี้ 1
+    	        needleValue: 90,
+    	        //borderColor: 'white',
+    	        //borderWidth: 2,
+    	        cutout: '80%',
+    	        circumference: 180,
+    	        rotation: 270,
+    	        //borderRadius: 10,
+    	      }]
+    	    };
+    
+    const dataMeter2 = {
+  	      labels: ['Mon', 'Tue', 'Wed'],
+  	      datasets: [{
+  	        data: [18, 12, 150],
+  	        backgroundColor: [
+  	          'rgba(255, 26, 104, 1)',
+  	          'rgba(255, 206, 86, 1)',
+  	          'rgba(75, 192, 192, 1)'
+  	        ],
+  	    		//แก้ตัวนี้ 2
+  	        needleValue: 90,
+  	        //borderColor: 'white',
+  	        //borderWidth: 2,
+  	        cutout: '80%',
+  	        circumference: 180,
+  	        rotation: 270,
+  	        //borderRadius: 10,
+  	      }]
+  	    };
+    
+    // customLegend plugin
+    const customLegend = {
+    		id: 'customLegend',
+    		afterDraw: (chart, args, options) => {
+    			const { _metasets, ctx} = chart;
+    			ctx.save();
+    			_metasets.forEach((meta) => {
+    				//console.log(meta.data[meta.data.length - 1].y)
+    				ctx.font = 'bolder 12px Arial';
+    				ctx.fillStyle = meta._dataset.borderColor;
+    				ctx.textBaseline = 'middle';
+    				
+    				//ctx.fillText(meta._dataset.label, 400, 400);
+    				//ctx.fillText(meta._dataset.label, xPosition, yPosition);
+    				ctx.fillText(meta._dataset.label, meta.data[meta.data.length - 1].x + 6, meta.data[meta.data.length - 1].y)
+    			})
+    		}
+    }
+    
+ // gaugeNeedle block
+    const gaugeNeedle = {
+			id: 'gaugeNeedle',
+			afterDatasetDraw(chart, args, options) {
+				const { ctx, config, data, chartArea: { top, bottom, left, right, width, height }} = chart;
+				ctx.save();
+				//console.log(data);
+				const needleValue = data.datasets[0].needleValue;
+				const dataTotal = data.datasets[0].data.reduce((a, b) => a + b, 0); 
+				const angle = Math.PI + (1 / dataTotal * needleValue * Math.PI);
+				const cx = width / 2;
+				const cy = chart._metasets[0].data[0].y;
+				//console.log(ctx.canvas.offsetTop);
+				// needle
+				ctx.translate(cx, cy);
+				ctx.rotate(angle);
+				ctx.beginPath();
+				ctx.moveTo(0, -2);
+				ctx.lineTo(height - (ctx.canvas.offsetTop + 30), 0);
+				ctx.lineTo(0, 2);
+				ctx.fillStye = '#444';
+				ctx.fill();
+				ctx.restore();
+				// needle dot
+				//ctx.translate(-cx, -cy);
+				ctx.beginPath();
+				ctx.arc(cx, cy, 5, 0, 10);
+				ctx.fill();
+				ctx.restore();
+				
+				ctx.font = '30px Helvetica';
+				ctx.fillStye = '#444';
+				ctx.fillText(needleValue + '%', cx, cy + 50);
+				ctx.textAlign = 'center';
+				ctx.restore();
+			}
+		};
+    
+    // config block
+    const config = {
+      type: 'line',
+      data: dataLine,
+      options: {
+    	  maintainAspectRatio: false,
+	    	layout: {
+				  padding: {
+					  right: 100
+				  }
+	    	},
+    	  plugins: {
+    		  legend: {
+    			  display: false
+    		  }    		  
+    	  },
+    	  tension: 0.4,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      },
+      plugins: [customLegend]
+    };
+    
+    const configMeter1 = {
+    	      type: 'doughnut',
+    	      data: dataMeter1,
+    	      options: {
+    	    	  maintainAspectRatio: false,
+    	    	  plugins: {
+    	    		  legend: {
+    	    			  display: false
+    	    		  },
+    	    		  //tooltip: {
+    	    			  
+    	    			  //callbacks: {
+    	    				  
+    	    			  //}
+    	    		  //}
+    	    	  },
+    	      },
+    	      plugins: [gaugeNeedle]
+    	    };
+    
+    const configMeter2 = {
+  	      type: 'doughnut',
+  	      data: dataMeter2,
+  	      options: {
+  	    	  maintainAspectRatio: false,
+  	    	  plugins: {
+  	    		  legend: {
+  	    			  display: false
+  	    		  },
+  	    		  //tooltip: {
+  	    			  
+  	    			  //callbacks: {
+  	    				  
+  	    			  //}
+  	    		  //}
+  	    	  },
+  	      },
+  	      plugins: [gaugeNeedle]
+  	    };
+
+    // render init block
+    const myChartLine = new Chart(
+      document.getElementById('myChartLine'),
+      config
+    );
+    
+ // render init block
+    const myChartMeter1 = new Chart(
+      document.getElementById('myChartMeter1'),
+      configMeter1
+    );
+	
+    const myChartMeter2 = new Chart(
+  		document.getElementById('myChartMeter2'),
+  		configMeter2
+  	);
+    
+    function toggleData(value) {
+    	console.log(value);
+    }
+    </script>
+
+	<!-- Body potisuwan -->
+
+	<!-- Footer potisuwan -->
+
+	<div th:replace="~{fragments/footer :: footer}"></div>
+	<!-- Footer potisuwan -->
+
+</body>
+</html>

@@ -6,21 +6,14 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Calendar;
 
 import toto.xdev.modet.Message;
 
 public class GetModel {
 
 	public static void main(String[] args) {
-
-//		try {
-//			HttpResponse<String> resp =  client.send(req, BodyHandlers.ofString());
-//			System.out.println(resp.statusCode());
-//			System.out.println(resp.body());
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//		}
-
+		
 		try {
 			for (;;) {
 				for (int i = 1; i <= 50; i++) {
@@ -28,8 +21,9 @@ public class GetModel {
 					message.setName("toot_1");
 					message.setHumidity(Long.valueOf(i));
 					message.setTemperature(Long.valueOf(i));
+					
 
-					String url = "http://localhost:8080/post?id=3&name=" + message.getName() + "&temperature="
+					String url = "http://localhost:8081/post?id=3&name=" + message.getName() + "&temperature="
 							+ message.getTemperature() + "&humidity=" + message.getHumidity();
 
 					//System.out.print(url);
@@ -45,7 +39,8 @@ public class GetModel {
 						HttpResponse<String> resp =  client.send(req, BodyHandlers.ofString());
 						System.out.println(resp.statusCode());
 						System.out.println(resp.body());
-					Thread.sleep(10000);
+						
+					Thread.sleep(1000);
 					//System.out.println();// new line
 				}
 
